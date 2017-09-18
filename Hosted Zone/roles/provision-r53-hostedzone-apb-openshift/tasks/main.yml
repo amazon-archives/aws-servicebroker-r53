@@ -8,9 +8,19 @@
    disable_rollback: false
    template: "{{ role_path }}/files/Route53HostedZone.yml"
    template_parameters:
-     HostedZone: "{{ HostedZone }}"
+     HostedZoneName: "{{ HostedZoneName }}"
    tags:
      Stack: "ansible-cloudformation"
      Application: "ansible-r53-hostedzone"
-     Description: "{{ ansible_user_id }} r53-hostedzone {{ ApplicationName }}"
+     Description: "{{ ansible_user_id }} r53-hostedzone {{ HostedZoneName }}"
   register: r53
+
+- name: Check for CloudFormation error logs
+  debug:
+    var: r53.log
+
+- name: Encode bind credentials
+  asb_encode_binding:
+    fields:
+      hosted_zone_id: "{{ r53.stack_outputs.HostedZoneId }}"
+  when: r53.log | length < 1

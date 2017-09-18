@@ -36,9 +36,9 @@ plans:
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
-        description: 'Name of the hosted zone which the records are to be created in'
+        description: 'Domain name of the hosted zone which the records are to be created in.'
         type: string
-    
+
     metadata:
         displayName: "Amazon Route 53 Record set"
         longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
