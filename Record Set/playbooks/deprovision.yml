@@ -1,0 +1,9 @@
+- name: r53 recordset deprovision
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  roles:
+  - role: ansible.kubernetes-modules
+    install_python_requirements: no
+  - role: deprovision-r53-recordset-apb-openshift
+    playbook_debug: false

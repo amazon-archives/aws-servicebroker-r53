@@ -1,0 +1,16 @@
+- name: Launch Route 53 hosted zone
+  cloudformation:
+   aws_access_key: "{{ aws_access_key }}"
+   aws_secret_key: "{{ aws_secret_key }}"
+   stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+   state: "present"
+   region: "{{ region }}"
+   disable_rollback: false
+   template: "{{ role_path }}/files/Route53HostedZone.yml"
+   template_parameters:
+     HostedZone: "{{ HostedZone }}"
+   tags:
+     Stack: "ansible-cloudformation"
+     Application: "ansible-r53-hostedzone"
+     Description: "{{ ansible_user_id }} r53-hostedzone {{ ApplicationName }}"
+  register: r53

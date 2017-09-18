@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: ' This template creates Route 53 records within an exising hosted Zone.'
+Parameters:
+  HostedZoneName:
+    Description: Id of the hosted zone which the records are to be created in
+    Type: String
+  HostedZoneId:
+    Description: Name of the hosted zone which the records are to be created in
+    Type: String
+  TimeToLive:
+    Description: How long the resolved record can resolve.
+    Default: '360'
+    Type: String
+  Type:
+    Description: Type of record.
+    Type: String
+    AllowedValues:
+      - A
+      - AAAA
+      - CAA
+      - CNAME
+      - MX
+      - NS
+      - PTR
+      - SOA
+      - SPF
+      - SRV
+      - TXT
+  RecordName:
+    Description: Name of the record to be added
+    Type: String
+  ResourceRecord:
+    Description: the IP DNS resolves to
+    Type: String
+  HealthCheckId:
+    Description: Id of Health check should it be desired
+    Type: String
+  AliasTarget:
+    Description: >-
+      Alias resource record sets only: Information about the domain to which you
+      are redirecting traffic.
+    Type: String
+Conditions:
+  UseHealthCheck: !Not 
+    - !Equals 
+      - !Ref HealthCheckId
+      - ''
+  UseAlias: !Not 
+    - !Equals 
+      - !Ref AliasTarget
+      - ''
+Resources:
+  RecordSet:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      AliasTarget: !If 
+        - UseAlias
+        - !Ref AliasTarget
+        - !Ref 'AWS::NoValue'
+      HealthCheckId: !If 
+        - UseHealthCheck
+        - !Ref HealthCheckId
+        - !Ref 'AWS::NoValue'
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Join 
+        - ''
+        - - !Ref RecordName
+          - .
+          - !Ref HostedZoneName
+          - .
+      ResourceRecords:
+        - !Ref ResourceRecord
+      TTL: !Ref TimeToLive
+      Type: !Ref Type
+Outputs: {}
