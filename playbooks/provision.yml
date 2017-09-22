@@ -1,11 +1,12 @@
-- name: Deploy r53 record set to openshift
+- name: Deploy r53 provision
   hosts: localhost
   gather_facts: true
   connection: local
+  vars:
+    state: present
   roles:
   - role: ansible.kubernetes-modules
     install_python_requirements: no
-
   - role: ansibleplaybookbundle.asb-modules
-
-  - role: provision-r53-recordset-apb-openshift
+  - role: r53-apb-openshift
+    playbook_debug: false

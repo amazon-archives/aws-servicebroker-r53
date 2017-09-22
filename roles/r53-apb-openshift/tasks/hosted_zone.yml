@@ -1,3 +1,6 @@
+##############
+# Provision 
+##############
 - name: Launch Route 53 hosted zone
   cloudformation:
    aws_access_key: "{{ aws_access_key }}"
@@ -13,14 +16,30 @@
      Stack: "ansible-cloudformation"
      Application: "ansible-r53-hostedzone"
      Description: "{{ ansible_user_id }} r53-hostedzone {{ HostedZoneName }}"
-  register: r53
+  register: r53_hosted_zone
+  when: state == 'present'
 
 - name: Check for CloudFormation error logs
   debug:
-    var: r53.log
+    var: r53_hosted_zone.log
 
+##############
+# Deprovision 
+##############
+- name: Remove Route 53 Hosted Zone
+  cloudformation:
+    aws_access_key: "{{ aws_access_key }}"
+    aws_secret_key: "{{ aws_secret_key }}"
+    stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+    state: "absent"
+    region: "{{ region }}"
+  when: state == 'absent'
+
+###################
+# Bind Credentials
+###################
 - name: Encode bind credentials
   asb_encode_binding:
     fields:
-      hosted_zone_id: "{{ r53.stack_outputs.HostedZoneId }}"
-  when: r53.log | length < 1
+      hosted_zone_id: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
+  when: r53_hosted_zone.log | length < 1
