@@ -32,19 +32,12 @@ Parameters:
   ResourceRecord:
     Description: the IP DNS resolves to
     Type: String
-  HealthCheckId:
-    Description: Id of Health check should it be desired
-    Type: String
   AliasTarget:
     Description: >-
       Alias resource record sets only: Information about the domain to which you
       are redirecting traffic.
     Type: String
 Conditions:
-  UseHealthCheck: !Not 
-    - !Equals 
-      - !Ref HealthCheckId
-      - ''
   UseAlias: !Not 
     - !Equals 
       - !Ref AliasTarget
@@ -57,10 +50,6 @@ Resources:
         - UseAlias
         - !Ref AliasTarget
         - !Ref 'AWS::NoValue'
-      HealthCheckId: !If 
-        - UseHealthCheck
-        - !Ref HealthCheckId
-        - !Ref 'AWS::NoValue'
       HostedZoneId: !Ref HostedZoneId
       Name: !Join 
         - ''
@@ -72,4 +61,6 @@ Resources:
         - !Ref ResourceRecord
       TTL: !Ref TimeToLive
       Type: !Ref Type
-Outputs: {}
+Outputs:
+  RecordName:
+    Value: !Ref RecordSet
