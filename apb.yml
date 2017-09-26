@@ -9,7 +9,7 @@ bindable: true
 async: optional
 metadata:
   displayName: "Amazon Route 53 (APB)"
-  imageUrl: "https://d0.awsstatic.com/cloud-storage/Deck_Databases.png"
+  imageUrl: "https://s3.amazonaws.com/thp-aws-icons-dev/NetworkingContentDelivery_AmazonRoute53_LARGE.png"
   documentationUrl: "https://aws.amazon.com/documentation/route53/"
   dependencies: ['docker.io/ansibleplaybookbundle/r53-apb:latest']
   longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
