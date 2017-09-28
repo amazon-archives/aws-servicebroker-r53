@@ -11,7 +11,6 @@ metadata:
   displayName: "Amazon Route 53 (APB)"
   imageUrl: "https://s3.amazonaws.com/thp-aws-icons-dev/NetworkingContentDelivery_AmazonRoute53_LARGE.png"
   documentationUrl: "https://aws.amazon.com/documentation/route53/"
-  dependencies: ['docker.io/ansibleplaybookbundle/r53-apb:latest']
   longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
   providerDisplayName: "AWS"
 plans:
@@ -38,12 +37,6 @@ plans:
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
-      - name: region
-        required: true
-        title: AWS Region
-        description: 'AWS Region to create Hosted Zone in.'
-        type: string
-        default: "us-west-2"
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
@@ -72,12 +65,6 @@ plans:
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
-      - name: region
-        required: true
-        title: AWS Region
-        description: 'AWS Region to create Record Set in.'
-        type: string
-        default: "us-west-2"
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
