@@ -1,5 +1,5 @@
+version: 1.0
 name: r53-apb
-image: ansibleplaybookbundle/r53-apb
 description: 'AWS Managed Route 53 Implementation'
 tags:
   - amazon
