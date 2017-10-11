@@ -48,4 +48,4 @@
   asb_encode_binding:
     fields:
       RECORD_NAME: "{{ r53_record_set.stack_outputs.RecordName }}"
-  when: r53_record_set.log | length < 1
+  when: r53_record_set.stack_outputs.RecordName is defined

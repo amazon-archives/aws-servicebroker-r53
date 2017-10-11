@@ -42,4 +42,4 @@
   asb_encode_binding:
     fields:
       hosted_zone_id: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
-  when: r53_hosted_zone.log | length < 1
+  when: r53_hosted_zone.stack_outputs.HostedZoneId is defined
