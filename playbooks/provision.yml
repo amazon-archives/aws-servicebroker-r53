@@ -1,4 +1,4 @@
-- name: Deploy r53 provision
+- name: Route 53 Provision
   hosts: localhost
   gather_facts: true
   connection: local
