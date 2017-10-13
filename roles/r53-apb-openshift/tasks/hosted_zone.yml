@@ -1,45 +1,50 @@
 ##############
-# Provision 
+# Provision
 ##############
-- name: Launch Route 53 hosted zone
-  cloudformation:
-   aws_access_key: "{{ aws_access_key }}"
-   aws_secret_key: "{{ aws_secret_key }}"
-   stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
-   state: "present"
-   region: "{{ region }}"
-   disable_rollback: false
-   template: "{{ role_path }}/files/Route53HostedZone.yml"
-   template_parameters:
-     HostedZoneName: "{{ HostedZoneName }}"
-   tags:
-     Stack: "ansible-cloudformation"
-     Application: "ansible-r53-hostedzone"
-     Description: "{{ ansible_user_id }} r53-hostedzone {{ HostedZoneName }}"
-  register: r53_hosted_zone
+- name: Provision Route 53 Hosted Zone
+  block:
+
+  - name: Launch Route 53 Hosted Zone
+    cloudformation:
+     aws_access_key: "{{ aws_access_key }}"
+     aws_secret_key: "{{ aws_secret_key }}"
+     stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+     state: "present"
+     region: "{{ region }}"
+     disable_rollback: false
+     template: "{{ role_path }}/files/Route53HostedZone.yml"
+     template_parameters:
+       HostedZoneName: "{{ HostedZoneName }}"
+     tags:
+       Stack: "ansible-cloudformation"
+       Application: "ansible-r53-hostedzone"
+       Description: "{{ ansible_user_id }} r53-hostedzone {{ HostedZoneName }}"
+    register: r53_hosted_zone
+
+  - name: Check for CloudFormation error logs
+    debug:
+      var: r53_hosted_zone.log
+
+  - name: Encode bind credentials
+    asb_encode_binding:
+      fields:
+        hosted_zone_id: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
+    when: r53_hosted_zone.stack_outputs.HostedZoneId is defined
+
   when: state == 'present'
 
-- name: Check for CloudFormation error logs
-  debug:
-    var: r53_hosted_zone.log
+##############
+# Deprovision
+##############
+- name: Deprovision Route 53 Hosted Zone
+  block:
+    
+  - name: Remove Route 53 Hosted Zone
+    cloudformation:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+      state: "absent"
+      region: "{{ region }}"
 
-##############
-# Deprovision 
-##############
-- name: Remove Route 53 Hosted Zone
-  cloudformation:
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
-    stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
-    state: "absent"
-    region: "{{ region }}"
   when: state == 'absent'
-
-###################
-# Bind Credentials
-###################
-- name: Encode bind credentials
-  asb_encode_binding:
-    fields:
-      hosted_zone_id: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
-  when: r53_hosted_zone.stack_outputs.HostedZoneId is defined

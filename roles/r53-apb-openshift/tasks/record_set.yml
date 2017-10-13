@@ -1,51 +1,54 @@
 ##############
-# Provision 
+# Provision
 ##############
-- name: Launch Route 53 record set
-  cloudformation:
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
-    stack_name: "apb-r53-recordset-{{ stack_identifier }}"
-    state: "present"
-    region: "{{ region }}"
-    disable_rollback: false
-    template: "{{ role_path }}/files/Route53RecordSet.yml"
-    template_parameters:
-      HostedZoneName: "{{ HostedZoneName }}"
-      HostedZoneId: "{{ HostedZoneId }}"
-      TimeToLive: "{{ TimeToLive }}"
-      Type: "{{ TypeofRecord }}"
-      RecordName: "{{ RecordName }}"
-      ResourceRecord: "{{ ResourceRecord }}"
-      AliasTarget: "{{ AliasTarget }}"
-    tags:
-      Stack: "ansible-cloudformation"
-      Application: "ansible-r53-recordset"
-      Description: "{{ ansible_user_id }} r53-recordset"
-  register: r53_record_set
+- name: Provision Route 53 Record Set
+  block:
+  - name: Launch Route 53 Record Set
+    cloudformation:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      stack_name: "apb-r53-recordset-{{ stack_identifier }}"
+      state: "present"
+      region: "{{ region }}"
+      disable_rollback: false
+      template: "{{ role_path }}/files/Route53RecordSet.yml"
+      template_parameters:
+        HostedZoneName: "{{ HostedZoneName }}"
+        HostedZoneId: "{{ HostedZoneId }}"
+        TimeToLive: "{{ TimeToLive }}"
+        Type: "{{ TypeofRecord }}"
+        RecordName: "{{ RecordName }}"
+        ResourceRecord: "{{ ResourceRecord }}"
+        AliasTarget: "{{ AliasTarget }}"
+      tags:
+        Stack: "ansible-cloudformation"
+        Application: "ansible-r53-recordset"
+        Description: "{{ ansible_user_id }} r53-recordset"
+    register: r53_record_set
+
+  - name: Check for CloudFormation error logs
+    debug:
+      var: r53_record_set.log
+
+  - name: Encode bind credentials
+    asb_encode_binding:
+      fields:
+        RECORD_NAME: "{{ r53_record_set.stack_outputs.RecordName }}"
+    when: r53_record_set.stack_outputs.RecordName is defined
+
   when: state == 'present'
 
-- name: Check for CloudFormation error logs
-  debug:
-    var: r53_record_set.log
+##############
+# Deprovision
+##############
+- name: Deprovision Route 53 Record Set
+  block:
+  - name: Remove Route 53 Record Set
+    cloudformation:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
+      stack_name: "apb-r53-recordset-{{ stack_identifier }}"
+      state: "absent"
+      region: "{{ region }}"
 
-##############
-# Deprovision 
-##############
-- name: Remove Route 53 record set
-  cloudformation:
-    aws_access_key: "{{ aws_access_key }}"
-    aws_secret_key: "{{ aws_secret_key }}"
-    stack_name: "apb-r53-recordset-{{ stack_identifier }}"
-    state: "absent"
-    region: "{{ region }}"
   when: state == 'absent'
-
-###################
-# Bind Credentials
-###################
-- name: Encode bind credentials
-  asb_encode_binding:
-    fields:
-      RECORD_NAME: "{{ r53_record_set.stack_outputs.RecordName }}"
-  when: r53_record_set.stack_outputs.RecordName is defined
