@@ -1,4 +1,4 @@
-- name: r53-apb deprovision
+- name: Route 53 Deprovision
   hosts: localhost
   gather_facts: false
   connection: local
