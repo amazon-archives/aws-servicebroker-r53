@@ -1,2 +1,8 @@
 AliasTarget: ''
 region: us-east-1
+application_name: "{{ namespace }}::{{ _apb_plan_id }}"
+# build this from vars until we can get cluster_url and ServiceInstance UID
+param_strings:
+  hostedzone: "{% if _apb_plan_id == 'hostedzone' %}{{ namespace }}::{{ _apb_plan_id }}::{{ aws_access_key }}::{{ aws_secret_key }}::{{ aws_cloudformation_role_arn }}::{{ HostedZoneName }}{% endif %}"
+  recordset: "{% if _apb_plan_id == 'recordset' %}{{ namespace }}::{{ _apb_plan_id }}::{{ aws_access_key }}::{{ aws_secret_key }}::{{ aws_cloudformation_role_arn }}::{{ HostedZoneName }}::{{ HostedZoneId }}::{{ TimeToLive }}::{{ TypeofRecord }}::{{ RecordName }}::{{ ResourceRecord }}::{{ AliasTarget }}{% endif %}"
+params_hash: "{{ param_strings[_apb_plan_id] | checksum }}"

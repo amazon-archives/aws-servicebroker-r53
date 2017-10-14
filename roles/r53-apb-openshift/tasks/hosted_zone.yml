@@ -4,33 +4,54 @@
 - name: Provision Route 53 Hosted Zone
   block:
 
-  - name: Launch Route 53 Hosted Zone
+  - name: Launch Route 53 hosted zone
     cloudformation:
      aws_access_key: "{{ aws_access_key }}"
      aws_secret_key: "{{ aws_secret_key }}"
-     stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+     stack_name: "apb-r53-hostedzone-{{ stack_suffix }}"
      state: "present"
      region: "{{ region }}"
      disable_rollback: false
      template: "{{ role_path }}/files/Route53HostedZone.yml"
+     role_arn: "{{ aws_cloudformation_role_arn }}"
      template_parameters:
        HostedZoneName: "{{ HostedZoneName }}"
      tags:
-       Stack: "ansible-cloudformation"
-       Application: "ansible-r53-hostedzone"
-       Description: "{{ ansible_user_id }} r53-hostedzone {{ HostedZoneName }}"
+       ServiceBrokerId: "{{ application_name }}"
     register: r53_hosted_zone
-
   - name: Check for CloudFormation error logs
     debug:
       var: r53_hosted_zone.log
-
+  - name: Create IAM user
+    iam:
+      iam_type: user
+      name: "apb-r53-iam-{{ stack_suffix }}"
+      state: present
+      access_key_state: create
+    register: iam_output
+  - name: Generate IAM policy temporary json file
+    template:
+      src: "{{ role_path }}/files/Route53AccessPolicy.json.j2"
+      dest: "/tmp/{{ stack_suffix }}.json"
+  - name: Attach IAM policy
+    iam_policy:
+      iam_type: user
+      iam_name: "apb-r53-iam-{{ stack_suffix }}"
+      policy_name: "Route53-APB-{{ stack_suffix }}"
+      state: present
+      policy_document: "/tmp/{{ stack_suffix }}.json"
+  - name: Remove IAM policy temporary json file
+    file:
+      state: absent
+      path: /tmp/{{ stack_suffix }}.json
   - name: Encode bind credentials
     asb_encode_binding:
       fields:
-        hosted_zone_id: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
+        ROUTE53_HOSTED_ZONE_ID: "{{ r53_hosted_zone.stack_outputs.HostedZoneId }}"
+        ROUTE53_DOMAIN_NAME: "{{ HostedZoneName }}"
+        ROUTE53_AWS_ACCESS_KEY_ID: "{{ iam_output.user_meta.access_keys[0].access_key_id }}"
+        ROUTE53_AWS_SECRET_ACCESS_KEY: "{{ iam_output.user_meta.access_keys[0].secret_access_key }}"
     when: r53_hosted_zone.stack_outputs.HostedZoneId is defined
-
   when: state == 'present'
 
 ##############
@@ -38,13 +59,22 @@
 ##############
 - name: Deprovision Route 53 Hosted Zone
   block:
-    
   - name: Remove Route 53 Hosted Zone
     cloudformation:
       aws_access_key: "{{ aws_access_key }}"
       aws_secret_key: "{{ aws_secret_key }}"
-      stack_name: "apb-r53-hostedzone-{{ stack_identifier }}"
+      stack_name: "apb-r53-hostedzone-{{ stack_suffix }}"
       state: "absent"
       region: "{{ region }}"
-
+  - name: Remove IAM policy
+    iam_policy:
+      iam_type: user
+      iam_name: "apb-r53-iam-{{ stack_suffix }}"
+      policy_name: "DynamoDB-APB-{{ stack_suffix }}"
+      state: absent
+  - name: Remove IAM user
+    iam:
+      iam_type: user
+      name: "apb-r53-iam-{{ stack_suffix }}"
+      state: absent
   when: state == 'absent'

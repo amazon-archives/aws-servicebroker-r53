@@ -3,15 +3,16 @@
 ##############
 - name: Provision Route 53 Record Set
   block:
-  - name: Launch Route 53 Record Set
+  - name: Launch Route 53 record set
     cloudformation:
       aws_access_key: "{{ aws_access_key }}"
       aws_secret_key: "{{ aws_secret_key }}"
-      stack_name: "apb-r53-recordset-{{ stack_identifier }}"
+      stack_name: "apb-r53-recordset-{{ stack_suffix }}"
       state: "present"
       region: "{{ region }}"
       disable_rollback: false
       template: "{{ role_path }}/files/Route53RecordSet.yml"
+      role_arn: "{{ aws_cloudformation_role_arn }}"
       template_parameters:
         HostedZoneName: "{{ HostedZoneName }}"
         HostedZoneId: "{{ HostedZoneId }}"
@@ -21,9 +22,7 @@
         ResourceRecord: "{{ ResourceRecord }}"
         AliasTarget: "{{ AliasTarget }}"
       tags:
-        Stack: "ansible-cloudformation"
-        Application: "ansible-r53-recordset"
-        Description: "{{ ansible_user_id }} r53-recordset"
+        ServiceBrokerId: "{{ application_name }}"
     register: r53_record_set
 
   - name: Check for CloudFormation error logs
@@ -35,7 +34,6 @@
       fields:
         RECORD_NAME: "{{ r53_record_set.stack_outputs.RecordName }}"
     when: r53_record_set.stack_outputs.RecordName is defined
-
   when: state == 'present'
 
 ##############
@@ -43,12 +41,11 @@
 ##############
 - name: Deprovision Route 53 Record Set
   block:
-  - name: Remove Route 53 Record Set
+  - name: Remove Route 53 record set
     cloudformation:
       aws_access_key: "{{ aws_access_key }}"
       aws_secret_key: "{{ aws_secret_key }}"
-      stack_name: "apb-r53-recordset-{{ stack_identifier }}"
+      stack_name: "apb-r53-recordset-{{ stack_suffix }}"
       state: "absent"
       region: "{{ region }}"
-
   when: state == 'absent'

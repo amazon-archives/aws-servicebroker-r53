@@ -1,3 +1,10 @@
+- name: generate b62 hash
+  shell: "16to62 {{ params_hash }}"
+  register: command_output
+- name: set fact
+  set_fact:
+    stack_suffix: "{{ command_output.stdout }}"
+
 - set_fact: plan_tasks_filename="hosted_zone.yml"
   when: _apb_plan_id == "hostedzone"
 
