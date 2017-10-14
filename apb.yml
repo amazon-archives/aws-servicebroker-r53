@@ -8,7 +8,7 @@ tags:
 bindable: true
 async: optional
 metadata:
-  displayName: "Amazon Route 53 (APB)"
+  displayName: "Amazon Route 53"
   imageUrl: "https://s3.amazonaws.com/thp-aws-icons-dev/NetworkingContentDelivery_AmazonRoute53_LARGE.png"
   documentationUrl: "https://aws.amazon.com/documentation/route53/"
   longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
@@ -22,26 +22,36 @@ plans:
       longDescription: "Hosted Zone APB"
       cost: $0.00
     parameters:
-      - name: stack_identifier
-        required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-hostedzzone-stack", "production-r53-hostedzone-08-2017")'
-        type: string
+      ###############
+      # AWS Account Information
+      ###############
       - name: aws_access_key
         required: true
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
       - name: aws_secret_key
         required: true
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
+      ###############
+      # Route53 Settings
+      ###############
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
         description: 'Domain name of the hosted zone which the records are to be created in.'
         type: string
+        display_group: Route53 Settings
   - name: recordset
     description: 'Managed Route53 Record Set'
     free: false
@@ -50,55 +60,71 @@ plans:
       longDescription: "Record Set APB"
       cost: $0.00
     parameters:
-      - name: stack_identifier
-        required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-recordset-stack", "production-r53-recordset-08-2017")'
-        type: string
+      ###############
+      # AWS Account Information
+      ###############
       - name: aws_access_key
         required: true
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
       - name: aws_secret_key
         required: true
         title: AWS Secret Key
         description: 'AWS Secret Key to authenticate to AWS with.'
         type: string
+        display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
+      ###############
+      # Route53 Settings
+      ###############
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
         description: 'Domain name of the hosted zone which the records are to be created in.'
         type: string
+        display_group: Route53 Settings
       - name: HostedZoneId
         required: true
         title: Id of the hosted zone
         description: 'Id of the hosted zone which the records are to be created in'
         type: string
+        display_group: Route53 Settings
       - name: TimeToLive
         required: true
         title: Time to live
         description: 'How long the resolved record can resolve.'
         type: string
         default: "360"
+        display_group: Route53 Settings
       - name: TypeofRecord
         required: true
         title: Type of record
         description: 'The type of record to be created'
         enum: ["A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SPF", "SRV", "TXT"]
         type: enum
+        display_group: Route53 Settings
       - name: RecordName
         required: true
         title: Record Name
         description: 'Name of the record to be added'
         type: string
+        display_group: Route53 Settings
       - name: ResourceRecord
         required: true
         title: Resource Record
         description: 'Ip or DNS name the record resolves to.'
         type: string
+        display_group: Route53 Settings
       - name: AliasTarget
         required: false
         title: Alias Target
         description: 'Alias resource record sets only: Information about the domain to which you are redirecting traffic.'
         type: string
+        display_group: Route53 Settings
