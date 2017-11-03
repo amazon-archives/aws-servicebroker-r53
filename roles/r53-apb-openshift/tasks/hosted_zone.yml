@@ -5,7 +5,7 @@
   block:
   - name: Launch Route 53 hosted zone
     cloudformation:
-     stack_name: "apb-r53-hostedzone-{{ stack_suffix }}"
+     stack_name: "apb-r53-{{ stack_suffix }}"
      state: "present"
      region: "{{ region }}"
      disable_rollback: false
