@@ -12,7 +12,7 @@ metadata:
   imageUrl: "https://s3.amazonaws.com/thp-aws-icons-dev/NetworkingContentDelivery_AmazonRoute53_LARGE.png"
   documentationUrl: "https://aws.amazon.com/documentation/route53/"
   longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
-  providerDisplayName: "awsservicebroker"
+  providerDisplayName: "Amazon Web Services"
 plans:
   - name: r53-hostedzone
     description: 'Managed Route53 hosted zone'
