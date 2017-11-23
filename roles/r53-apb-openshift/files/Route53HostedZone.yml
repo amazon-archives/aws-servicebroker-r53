@@ -1,3 +1,5 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'This template creates a Route 53 hosted Zone. qs-1nt0fs92n'
 Parameters:
   HostedZoneName:
     Description: Name of the hosted zone
