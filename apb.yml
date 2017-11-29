@@ -12,9 +12,9 @@ metadata:
   imageUrl: "https://s3.amazonaws.com/thp-aws-icons-dev/NetworkingContentDelivery_AmazonRoute53_LARGE.png"
   documentationUrl: "https://aws.amazon.com/documentation/route53/"
   longDescription: "Amazon Route 53 is a highly available and scalable Domain Name System (DNS) web service."
-  providerDisplayName: "AWS"
+  providerDisplayName: "Amazon Web Services"
 plans:
-  - name: hostedzone
+  - name: r53-hostedzone
     description: 'Managed Route53 hosted zone'
     free: false
     metadata:
@@ -30,7 +30,6 @@ plans:
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
-        display_type: password
         display_group: AWS Account Information
       - name: aws_secret_key
         required: true
@@ -39,22 +38,22 @@ plans:
         type: string
         display_type: password
         display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
       ##########################
       # Hosted Zone Settings
       ##########################
-      - name: stack_identifier
-        required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-hostedzzone-stack", "production-r53-hostedzone-08-2017")'
-        type: string
-        display_group: Hosted Zone Settings
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
         description: 'Domain name of the hosted zone which the records are to be created in. (e.g. mydomain.dog8code.com)'
         type: string
         display_group: Hosted Zone Settings
-  - name: recordset
+  - name: r53-recordset
     description: 'Managed Route53 Record Set'
     free: false
     metadata:
@@ -70,7 +69,6 @@ plans:
         title: AWS Access Key
         description: 'AWS Access Key to authenticate to AWS with.'
         type: string
-        display_type: password
         display_group: AWS Account Information
       - name: aws_secret_key
         required: true
@@ -79,15 +77,15 @@ plans:
         type: string
         display_type: password
         display_group: AWS Account Information
+      - name: aws_cloudformation_role_arn
+        required: true
+        title: AWS Cloudformation role ARN
+        description: 'IAM role ARN for use as Cloudformation Stack Role.'
+        type: string
+        display_group: AWS Account Information
       ##########################
       # Record Set Settings
       ##########################
-      - name: stack_identifier
-        required: true
-        title: Unique Stack Identifier
-        description: 'Unique identifier to be included in the CloudFormation Stack Name to prevent naming collisions. Must only contain alphanumeric characters and hyphens. (e.g. "sample-recordset-stack", "production-r53-recordset-08-2017")'
-        type: string
-        display_group: Record Set Settings
       - name: HostedZoneName
         required: true
         title: Name of the hosted zone
@@ -131,4 +129,4 @@ plans:
         title: Alias Target
         description: 'Alias resource record sets only: Information about the domain to which you are redirecting traffic.'
         type: string
-        display_group: Record Set Settings
+display_group: Record Set Settings
