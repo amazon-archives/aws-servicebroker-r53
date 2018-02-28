@@ -18,4 +18,4 @@
   when: _apb_plan_id == "r53-recordset"
 
 - name: "Loading tasks for plan: {{ _apb_plan_id }}"
-include: "{{ plan_tasks_filename }}"
+  include: "{{ plan_tasks_filename }}"
