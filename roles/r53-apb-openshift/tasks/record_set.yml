@@ -44,4 +44,4 @@
       stack_name: "apb-r53-recordset-{{ stack_suffix }}"
       state: "absent"
       region: "{{ region }}"
-when: state == 'absent'
+  when: state == 'absent'

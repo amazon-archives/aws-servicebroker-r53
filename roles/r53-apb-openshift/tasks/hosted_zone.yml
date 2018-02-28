@@ -72,4 +72,4 @@
       iam_type: user
       name: "apb-r53-iam-{{ stack_suffix }}"
       state: absent
-when: state == 'absent'
+  when: state == 'absent'
