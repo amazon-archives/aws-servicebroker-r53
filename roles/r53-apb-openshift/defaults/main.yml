@@ -1,3 +1,0 @@
-AliasTarget: ''
-region: us-east-1
-application_name: "{{ namespace }}::{{ _apb_plan_id }}"
